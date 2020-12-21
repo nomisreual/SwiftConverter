@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var input = 0
-    @State private var output = 0
+    @State private var input = Temperatures.celsius
+    @State private var output = Temperatures.celsius
     @State private var input_value = ""
-    @State private var temp = Temperatures.celsius
     
     enum Temperatures: String {
         case kelvin
@@ -19,53 +18,39 @@ struct ContentView: View {
         case fahrenheit
     }
     
-
-    let temps = ["Celsius", "Fahrenheit", "Kelvin"]
-    
-    
     
     var output_value: Double {
-        let chosen_in = temps[input]
-        let chosen_out = temps[output]
         
         let value = Double(input_value) ?? 0
         
-        switch chosen_in {
-        case "Celsius":
-            switch chosen_out {
-            case "Celsius":
+        switch input {
+        case .celsius:
+            switch output {
+            case .celsius:
                 return value
-            case "Fahrenheit":
+            case .fahrenheit:
                 return value * 1.8 + 32.0
-            case "Kelvin":
+            case .kelvin:
                 return value + 273.15
-            default:
-                return 0
             }
-        case "Fahrenheit":
-            switch chosen_out {
-            case "Celsius":
+        case .fahrenheit:
+            switch output {
+            case .celsius:
                 return (value - 32.0) * (5/9)
-            case "Fahrenheit":
+            case .fahrenheit:
                 return value
-            case "Kelvin":
+            case .kelvin:
                 return ((value - 32.0) * (5/9)) + 273.15
-            default:
-                return 0
             }
-        case "Kelvin":
-            switch chosen_out {
-            case "Celsius":
+        case .kelvin:
+            switch output {
+            case .celsius:
                 return value - 273.15
-            case "Fahrenheit":
+            case .fahrenheit:
                 return (value - 273.15) * 1.8 + 32.0
-            case "Kelvin":
+            case .kelvin:
                 return value
-            default:
-                return 0
             }
-        default:
-            return 0
         }
     }
       
@@ -74,18 +59,19 @@ struct ContentView: View {
         NavigationView {
             Form {
                 Section(header: Text("Choose an Input type")) {
-                    Picker("Input", selection: $input) {
-                        ForEach(0 ..< temps.count) {
-                            Text("\(self.temps[$0])")
-                        }
+                    Picker("Choose", selection: $input) {
+                        Text("Celsius").tag(Temperatures.celsius)
+                        Text("Kelvin").tag(Temperatures.kelvin)
+                        Text("Fahrenheit").tag(Temperatures.fahrenheit)
                     }
                     .pickerStyle(SegmentedPickerStyle())
+
                 }
                 Section(header: Text("Choose an output type")) {
-                    Picker("Output", selection: $output) {
-                        ForEach(0 ..< temps.count) {
-                            Text("\(self.temps[$0])")
-                        }
+                    Picker("Choose", selection: $output) {
+                        Text("Celsius").tag(Temperatures.celsius)
+                        Text("Kelvin").tag(Temperatures.kelvin)
+                        Text("Fahrenheit").tag(Temperatures.fahrenheit)
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
@@ -94,22 +80,13 @@ struct ContentView: View {
                 }
                 Section(header: Text("Output")) {
                     switch output {
-                    case 0:
+                    case .celsius:
                         Text("\(output_value, specifier: "%.2f") °C")
-                    case 1:
+                    case .kelvin:
                         Text("\(output_value, specifier: "%.2f") °F")
-                    default:
+                    case .fahrenheit:
                         Text("\(output_value, specifier: "%.2f") °K")
                     }
-                }
-                Section {
-                    Picker("Choose", selection: $temp) {
-                        Text("Celsius").tag(Temperatures.celsius)
-                        Text("Kelvin").tag(Temperatures.kelvin)
-                        Text("Fahrenheit").tag(Temperatures.fahrenheit)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    Text("\(temp.rawValue.capitalized)")
                 }
             }
             .navigationBarTitle("Converter")
