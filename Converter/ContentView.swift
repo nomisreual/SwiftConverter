@@ -12,10 +12,15 @@ struct ContentView: View {
     @State private var output = Temperatures.celsius
     @State private var input_value = ""
     
-    enum Temperatures: String {
-        case kelvin
-        case celsius
-        case fahrenheit
+    enum Temperatures: String, Identifiable, CaseIterable {
+       
+        var id: String {
+            self.rawValue
+        }
+        
+        case kelvin = "Kelvin"
+        case celsius = "Celsius"
+        case fahrenheit = "Fahrenheit"
     }
     
     
@@ -60,18 +65,18 @@ struct ContentView: View {
             Form {
                 Section(header: Text("Choose an Input type")) {
                     Picker("Choose", selection: $input) {
-                        Text("Celsius").tag(Temperatures.celsius)
-                        Text("Kelvin").tag(Temperatures.kelvin)
-                        Text("Fahrenheit").tag(Temperatures.fahrenheit)
+                        ForEach(Temperatures.allCases) {
+                            Text($0.rawValue).tag($0)
+                        }
                     }
                     .pickerStyle(SegmentedPickerStyle())
 
                 }
                 Section(header: Text("Choose an output type")) {
                     Picker("Choose", selection: $output) {
-                        Text("Celsius").tag(Temperatures.celsius)
-                        Text("Kelvin").tag(Temperatures.kelvin)
-                        Text("Fahrenheit").tag(Temperatures.fahrenheit)
+                        ForEach(Temperatures.allCases) {
+                            Text($0.rawValue).tag($0)
+                        }
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
@@ -83,9 +88,9 @@ struct ContentView: View {
                     case .celsius:
                         Text("\(output_value, specifier: "%.2f") °C")
                     case .kelvin:
-                        Text("\(output_value, specifier: "%.2f") °F")
-                    case .fahrenheit:
                         Text("\(output_value, specifier: "%.2f") °K")
+                    case .fahrenheit:
+                        Text("\(output_value, specifier: "%.2f") °F")
                     }
                 }
             }
